@@ -29,15 +29,10 @@
         private void InitializeComponent()
         {
             this.DGV = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.openRule = new System.Windows.Forms.Button();
             this.saveRule = new System.Windows.Forms.Button();
             this.SaveAs = new System.Windows.Forms.Button();
+            this.textBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,48 +40,15 @@
             // 
             this.DGV.AllowUserToAddRows = false;
             this.DGV.AllowUserToDeleteRows = false;
+            this.DGV.AllowUserToResizeColumns = false;
+            this.DGV.AllowUserToResizeRows = false;
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3,
-            this.Column4,
-            this.Column5,
-            this.Column6});
+            this.DGV.GridColor = System.Drawing.SystemColors.ControlDarkDark;
             this.DGV.Location = new System.Drawing.Point(13, 13);
+            this.DGV.MultiSelect = false;
             this.DGV.Name = "DGV";
-            this.DGV.Size = new System.Drawing.Size(645, 388);
+            this.DGV.Size = new System.Drawing.Size(764, 342);
             this.DGV.TabIndex = 0;
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "+";
-            this.Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "*";
-            this.Column2.Name = "Column2";
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "(";
-            this.Column3.Name = "Column3";
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = ")";
-            this.Column4.Name = "Column4";
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "i";
-            this.Column5.Name = "Column5";
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "#";
-            this.Column6.Name = "Column6";
             // 
             // openRule
             // 
@@ -121,12 +83,20 @@
             this.SaveAs.UseVisualStyleBackColor = true;
             this.SaveAs.Click += new System.EventHandler(this.SaveAs_Click);
             // 
+            // textBox
+            // 
+            this.textBox.Location = new System.Drawing.Point(13, 391);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(764, 20);
+            this.textBox.TabIndex = 4;
+            // 
             // CompilerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1094, 577);
+            this.ClientSize = new System.Drawing.Size(1107, 639);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.SaveAs);
             this.Controls.Add(this.saveRule);
             this.Controls.Add(this.openRule);
@@ -135,20 +105,16 @@
             this.Text = "CompilerForm";
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.DataGridView DGV;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.Button openRule;
         private System.Windows.Forms.Button saveRule;
         private System.Windows.Forms.Button SaveAs;
+        private System.Windows.Forms.TextBox textBox;
     }
 }

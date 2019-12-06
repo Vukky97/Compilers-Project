@@ -1,6 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Data;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CsvHelper;
 
 namespace Compilers
 {
@@ -9,8 +17,8 @@ namespace Compilers
         public CompilerForm()
         {
             InitializeComponent();
-            FillUpDGV();
-            //string fileExtension = "xml";
+            //FillUpDGV();
+            SimpleOpenFile();
         }
 
         public void FillUpDGV()
@@ -45,31 +53,96 @@ namespace Compilers
         public void OpenFile()
         {
             OpenFileDialog OFD = new OpenFileDialog();
-            OFD.Filter = "XML Files (*.xml)|*.xml";
+            OFD.Filter = "CSV Files (*.csv)|*.csv";
             OFD.FilterIndex = 0;
-            OFD.DefaultExt = "xml";
+            OFD.DefaultExt = "csv";
 
             if (OFD.ShowDialog() == DialogResult.OK)
             {
-                if (!String.Equals(Path.GetExtension(OFD.FileName), ".xml", StringComparison.OrdinalIgnoreCase))
+
+                if (!String.Equals(Path.GetExtension(OFD.FileName), ".csv", StringComparison.OrdinalIgnoreCase))
                 {
                     // Invalid file type selected; display an error.
-                    MessageBox.Show("The type of the selected file is not supported by this application. You must select an XML file.",
-                                    "Invalid File Type",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
+                    MessageBox.Show("The type of the selected file is not supported by this application. You must select an .csv file.", "Invalid File Type", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
                     string fullPath = OFD.FileName;
                     string fileName = OFD.SafeFileName;
-                    string filepath = fullPath.Replace(fileName, "");
+                    //string filepath = fullPath.Replace(fileName, "");
+                    using (var reader = new StreamReader(fullPath))
+                    using (var csv = new CsvReader(reader))
+                    {
+                    }
+                    DataSet ds = new DataSet();
+                    //DGV.DataSource =
+
+                    //ds.ReadXml(fullPath);
+                    //DGV.DataSource = ds.Tables[0];
                 }
             }
         }
 
+        public void SimpleOpenFile()
+        {
+            DataTable dataTable = new DataTable();
+            OpenFileDialog OFD = new OpenFileDialog();
+            OFD.Filter = "CSV Files (*.csv)|*.csv";
+            OFD.FilterIndex = 0;
+            OFD.DefaultExt = "csv";
+
+            string fullPath = "";
+            if (OFD.ShowDialog() == DialogResult.OK)
+            {
+                fullPath = OFD.FileName;
+            }
+            string[] rawText = File.ReadAllLines(fullPath);
+            string[] dataColumns = null;
+            bool isHeader = true;
+            foreach (string textLine in rawText)
+            {
+                dataColumns = textLine.Split(';');
+                if (isHeader)
+                {
+                    for (int i = 0; i <= dataColumns.Count() - 1; i++)
+                    {
+                        dataTable.Columns.Add(dataColumns[i]);
+                    }
+                    isHeader = false;
+                }
+                else
+                {
+                    dataTable.Rows.Add(dataColumns);
+                }
+
+                DGV.DataSource = dataTable;
+                foreach (DataGridViewColumn column in DGV.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+
+            }
+
+
+        }
+
         public void SaveFile()
         {
+            textBox.Text = "";
+            textBox.Multiline = true;
+            // TODO: Save File Dialog to get the save route
+            int rowCount = DGV.RowCount;
+            int CellCount = DGV.Rows[0].Cells.Count;
+
+            for (int rowIndex = 0; rowIndex <= rowCount - 2; rowIndex++)
+            {
+                for (int cellIndex = 0; cellIndex < CellCount - 1; cellIndex++)
+                {
+                    textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
+                }
+                textBox.Text = "\r\n";
+            }
+
 
         }
 
