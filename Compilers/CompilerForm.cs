@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
+using System.Reflection;
 
 namespace Compilers
 {
@@ -20,7 +21,7 @@ namespace Compilers
             //SimpleOpenFile();
         }
 
-        public void SimpleOpenFile()
+        public void OpenFile()
         {
             DataTable dataTable = new DataTable();
             OpenFileDialog OFD = new OpenFileDialog();
@@ -57,16 +58,43 @@ namespace Compilers
                 {
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
                 }
+            }
+        }
 
+        public void SaveFileAs()
+        {
+            InitializeTextBox();
+            int rowCount = DGV.RowCount;
+            int CellCount = DGV.Rows[0].Cells.Count;
+
+            // TODO: a headert is olvassa be valahogy a csv be
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            {
+                for (int cellIndex = 0; cellIndex < CellCount; cellIndex++)
+                {
+                    // TODO: utolso elemek mogott ne legyen pontos vesszo
+                    textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
+                }
+                textBox.Text += "\r\n";
             }
 
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Title = "Save";
+            SFD.Filter = "CSV Files (*.csv)|*.csv" + " | " + "All Files (*.*)|*.*";
+
+            string fullPath = "";
+            // TODO :catch el lekezelni ha kilepne SFD bol try catch 
+            if (SFD.ShowDialog() == DialogResult.OK)
+            {
+                fullPath = SFD.FileName;
+            }
+            File.WriteAllText(fullPath, textBox.Text);
 
         }
 
         public void SaveFile()
         {
             InitializeTextBox();
-            // TODO: Save File Dialog to get the save route
             int rowCount = DGV.RowCount;
             int CellCount = DGV.Rows[0].Cells.Count;
 
@@ -79,19 +107,11 @@ namespace Compilers
                 textBox.Text += "\r\n";
             }
 
-            SaveFileDialog SFD = new SaveFileDialog();
-            SFD.Title = "Save";
-            SFD.Filter = "CSV Files (*.csv)|*.csv" + " | " + "All Files (*.*)|*.*";
-
-            string fullPath = "";
-            if (SFD.ShowDialog() == DialogResult.OK)
-            {
-                fullPath = SFD.FileName;
-            }
-
+            string fullPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "temp.csv");
             File.WriteAllText(fullPath, textBox.Text);
 
         }
+
         private void InitializeTextBox()
         {
             textBox.Text = "";
@@ -101,10 +121,9 @@ namespace Compilers
 
         private void openRule_Click(object sender, System.EventArgs e)
         {
-            SimpleOpenFile();
+            OpenFile();
         }
 
-        // mentes helye a megnyitott file legyen
         private void saveRule_Click(object sender, System.EventArgs e)
         {
             SaveFile();
@@ -113,7 +132,7 @@ namespace Compilers
         // kivalszhato mentes hely
         private void SaveAs_Click(object sender, System.EventArgs e)
         {
-
+            SaveFileAs();
         }
     }
 }

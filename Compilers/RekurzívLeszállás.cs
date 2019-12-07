@@ -8,8 +8,7 @@ namespace Compilers
 {
     class RekurzívLeszállás
     {
-        // TODO: Beszédesre csinálni, hashmarkot tenni a vegere ha nincs, akar user adja meg a szoveget, akar o adja meg a string inputo
-        // Sok szovegre is mukodjon, pl karakterre szet spliteli es darabokra megmondja h helyes v helytelen
+        // TODO: 
         // Szokoz kitakarit v ne legyen az inputba es az alapjan splitelni, vagy / menten splitelni
         //string s = "i+i*i#";
         //string s = "(i+i)#";
