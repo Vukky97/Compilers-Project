@@ -41,7 +41,12 @@ namespace Compilers
             }
             string[] rawText = File.ReadAllLines(fullPath);
             string[] dataColumns = null;
+            string columnHeaders = "";
+            List<string> rowHeaders = new List<string>();
             bool isHeader = true;
+            //remove:
+            int k = 0;
+
             foreach (string textLine in rawText)
             {
                 dataColumns = textLine.Split(';');
@@ -50,15 +55,39 @@ namespace Compilers
                     for (int i = 0; i <= dataColumns.Count() - 1; i++)
                     {
                         dataTable.Columns.Add(dataColumns[i]);
+                        columnHeaders += dataColumns[i];
                     }
                     isHeader = false;
                 }
                 else
                 {
+                    //dataTable.Rows.Add(dataColumns);
                     dataTable.Rows.Add(dataColumns);
+                    rowHeaders.Add((string)(dataTable.Rows[k][0] = dataColumns[0].ToString()));
+                    k++;
                 }
+                //string test = dataTable.Columns[0].ToString();
+                //MessageBox.Show(test);
+                //string test2 = dataTable.Rows[0].ToString();
+                //MessageBox.Show(test2);
+                //string test3 = dataTable.Rows[1][1].ToString();
+                //MessageBox.Show(test3);
+                //MessageBox.Show(textLine);
+                //for (int i = 0; i < dataColumns.Length - 1; i++)
+                //{
+                //    MessageBox.Show(dataTable.Rows[i + 1].ToString());
+                //}
 
                 DGV.DataSource = dataTable;
+                //DataGridView1.Rows[3].Cells[1].Value.ToString();
+                MessageBox.Show("Watch up for this.");
+                MessageBox.Show(DGV.Rows[1].Cells[0].ToString());
+
+                for (int i = 0; i < rowHeaders.Count; i++)
+                {
+                    MessageBox.Show(rowHeaders[i]);
+                }
+
                 foreach (DataGridViewColumn column in DGV.Columns)
                 {
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
@@ -78,8 +107,15 @@ namespace Compilers
             {
                 for (int cellIndex = 0; cellIndex < CellCount; cellIndex++)
                 {
-                    // TODO: utolso elemek mogott ne legyen pontos vesszo
-                    textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
+                    if (!(CellCount - cellIndex <= 1))
+                    {
+                        textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
+                    }
+                    else
+                    {
+                        textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString();
+                    }
+
                 }
                 textBox.Text += "\r\n";
             }
