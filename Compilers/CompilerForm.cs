@@ -15,9 +15,15 @@ namespace Compilers
 {
     public partial class CompilerForm : Form
     {
+        private Stack<string> tape;
+        private Stack<string> rule;
+        private string ruleNum;
+        private int colNum, rowNum;
+
         public CompilerForm()
         {
             InitializeComponent();
+            BTN_Analyze.Enabled = false;
         }
 
         public void OpenFile()
@@ -58,6 +64,7 @@ namespace Compilers
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
                 }
             }
+            BTN_Analyze.Enabled = true;
         }
 
         private void SaveFile()
@@ -129,6 +136,123 @@ namespace Compilers
             textBox.Size = new Size(750, 200);
         }
 
+        private void Analyze()
+        {
+            rule = new Stack<string>();
+            tape = new Stack<string>();
+            ruleNum = "";
+            tape.Push("#");
+            rule.Push("#");
+            rule.Push("E");
+            colNum = 0;
+            rowNum = 0;
+            label1.Text = "";
+            string actRule;
+            string actState;
+            if (textBoxAnalyze.Text != "")
+            {
+                for (int i = textBoxAnalyze.Text.Length - 1; i >= 0; i--)
+                {
+                    tape.Push(textBoxAnalyze.Text[i].ToString());
+                }
+            }
+            string act = tape.Pop();
+            bool end = (act == "#");
+            while (DGV.Rows[rowNum].Cells[colNum].Value.ToString() != "elfogad" && !end)
+            {
+                colNum = 0;
+                rowNum = 0;
+                while (colNum < DGV.Columns.Count && act != DGV.Columns[colNum].HeaderText)
+                {
+                    colNum++;
+                }
+
+                if (colNum == DGV.Columns.Count)
+                {
+                    end = true;
+                    break;
+                }
+                else
+                {
+                    actRule = rule.Pop();
+                    if (actRule != "#" && rule.Peek() == "v")
+                    {
+                        actRule += rule.Pop();
+                    }
+                    // TODO: modify here
+                    while (rowNum < DGV.Rows.Count - 1 && actRule != DGV.Rows[rowNum].HeaderCell.Value.ToString())
+                    {
+                        rowNum++;
+                    }
+                    if (rowNum == DGV.Rows.Count - 1)
+                    {
+                        end = true;
+                        break;
+                    }
+                    else
+                    {
+                        actState = "[" + act;
+                        foreach (string s in tape)
+                        {
+                            actState += s;
+                        }
+                        actState += ", " + actRule;
+                        foreach (string s in rule)
+                        {
+                            actState += s;
+                        }
+                        actState += ", " + ruleNum + "]";
+
+                        if (DGV.Rows[rowNum].Cells[colNum].Value.ToString() == "")
+                        {
+                            end = true;
+                            break;
+                        }
+                        else if (DGV.Rows[rowNum].Cells[colNum].Value.ToString() == "pop")
+                        {
+                            act = tape.Pop();
+                            actState += " - pop";
+                        }
+                        else
+                        {
+                            string[] temp = DGV.Rows[rowNum].Cells[colNum].Value.ToString().Split(',');
+                            if (temp[0] == "e")
+                            {
+                                temp[0] = "";
+                            }
+                            for (int i = temp[0].Length - 1; i >= 0; i--)
+                            {
+                                rule.Push(temp[0][i].ToString());
+                            }
+                            if (temp.Length == 2)
+                            {
+                                ruleNum += temp[1];
+                            }
+                        }
+                        label1.Text += actState + "\r\n";
+                    }
+                }
+            }
+            if (rowNum < DGV.RowCount - 1 && colNum < DGV.ColumnCount)
+            {
+                if (DGV.Rows[rowNum].Cells[colNum].Value.ToString() == "elfogad")
+                {
+                    labelResult.ForeColor = Color.Green;
+                    labelResult.Text = "elfogad";
+                }
+                else
+                {
+                    labelResult.ForeColor = Color.Red;
+                    labelResult.Text = "Hibás input";
+                }
+            }
+            else
+            {
+                labelResult.ForeColor = Color.Red;
+                labelResult.Text = "Hibás input";
+            }
+        }
+
         private void openRule_Click(object sender, System.EventArgs e)
         {
             OpenFile();
@@ -137,6 +261,11 @@ namespace Compilers
         private void saveRule_Click(object sender, System.EventArgs e)
         {
             SaveFileShort();
+        }
+
+        private void BTN_Analyze_Click(object sender, EventArgs e)
+        {
+            Analyze();
         }
 
         private void SaveAs_Click(object sender, System.EventArgs e)

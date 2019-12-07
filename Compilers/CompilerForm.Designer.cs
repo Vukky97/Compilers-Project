@@ -34,6 +34,10 @@
             this.SaveAs = new System.Windows.Forms.Button();
             this.textBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.BTN_Analyze = new System.Windows.Forms.Button();
+            this.textBoxAnalyze = new System.Windows.Forms.TextBox();
+            this.LBL_TEXT_TO_ANALIZE = new System.Windows.Forms.Label();
+            this.labelResult = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -101,12 +105,53 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Preview n Edit";
             // 
+            // BTN_Analyze
+            // 
+            this.BTN_Analyze.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.BTN_Analyze.Location = new System.Drawing.Point(828, 445);
+            this.BTN_Analyze.Name = "BTN_Analyze";
+            this.BTN_Analyze.Size = new System.Drawing.Size(151, 52);
+            this.BTN_Analyze.TabIndex = 6;
+            this.BTN_Analyze.Text = "Analyze";
+            this.BTN_Analyze.UseVisualStyleBackColor = true;
+            this.BTN_Analyze.Click += new System.EventHandler(this.BTN_Analyze_Click);
+            // 
+            // textBoxAnalyze
+            // 
+            this.textBoxAnalyze.Location = new System.Drawing.Point(817, 412);
+            this.textBoxAnalyze.Name = "textBoxAnalyze";
+            this.textBoxAnalyze.Size = new System.Drawing.Size(186, 20);
+            this.textBoxAnalyze.TabIndex = 7;
+            // 
+            // LBL_TEXT_TO_ANALIZE
+            // 
+            this.LBL_TEXT_TO_ANALIZE.AutoSize = true;
+            this.LBL_TEXT_TO_ANALIZE.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.LBL_TEXT_TO_ANALIZE.Location = new System.Drawing.Point(847, 389);
+            this.LBL_TEXT_TO_ANALIZE.Name = "LBL_TEXT_TO_ANALIZE";
+            this.LBL_TEXT_TO_ANALIZE.Size = new System.Drawing.Size(132, 20);
+            this.LBL_TEXT_TO_ANALIZE.TabIndex = 8;
+            this.LBL_TEXT_TO_ANALIZE.Text = "Text to Analyze";
+            // 
+            // labelResult
+            // 
+            this.labelResult.AutoSize = true;
+            this.labelResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelResult.Location = new System.Drawing.Point(858, 526);
+            this.labelResult.Name = "labelResult";
+            this.labelResult.Size = new System.Drawing.Size(0, 20);
+            this.labelResult.TabIndex = 9;
+            // 
             // CompilerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1107, 639);
+            this.Controls.Add(this.labelResult);
+            this.Controls.Add(this.LBL_TEXT_TO_ANALIZE);
+            this.Controls.Add(this.textBoxAnalyze);
+            this.Controls.Add(this.BTN_Analyze);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.SaveAs);
@@ -129,5 +174,9 @@
         private System.Windows.Forms.Button SaveAs;
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button BTN_Analyze;
+        private System.Windows.Forms.TextBox textBoxAnalyze;
+        private System.Windows.Forms.Label LBL_TEXT_TO_ANALIZE;
+        private System.Windows.Forms.Label labelResult;
     }
 }
