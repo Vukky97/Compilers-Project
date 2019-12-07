@@ -33,6 +33,7 @@
             this.saveRule = new System.Windows.Forms.Button();
             this.SaveAs = new System.Windows.Forms.Button();
             this.textBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -47,7 +48,7 @@
             this.DGV.Location = new System.Drawing.Point(13, 13);
             this.DGV.MultiSelect = false;
             this.DGV.Name = "DGV";
-            this.DGV.Size = new System.Drawing.Size(764, 342);
+            this.DGV.Size = new System.Drawing.Size(750, 350);
             this.DGV.TabIndex = 0;
             // 
             // openRule
@@ -85,10 +86,20 @@
             // 
             // textBox
             // 
-            this.textBox.Location = new System.Drawing.Point(13, 391);
+            this.textBox.Location = new System.Drawing.Point(12, 412);
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(764, 20);
             this.textBox.TabIndex = 4;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label1.Location = new System.Drawing.Point(12, 389);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(122, 20);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Preview n Edit";
             // 
             // CompilerForm
             // 
@@ -96,6 +107,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1107, 639);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.SaveAs);
             this.Controls.Add(this.saveRule);
@@ -116,5 +128,6 @@
         private System.Windows.Forms.Button saveRule;
         private System.Windows.Forms.Button SaveAs;
         private System.Windows.Forms.TextBox textBox;
+        private System.Windows.Forms.Label label1;
     }
 }

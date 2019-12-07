@@ -17,70 +17,7 @@ namespace Compilers
         public CompilerForm()
         {
             InitializeComponent();
-            //FillUpDGV();
-            SimpleOpenFile();
-        }
-
-        public void FillUpDGV()
-        {
-            // TODO: Make a similar xml or csv and read it from file
-            // the table column and rows number will be fixed, but with cahngeable letters
-            DGV.Rows.Add("", "", "TEv,1", "", "TEv,1", "");
-            DGV.Rows.Add("+TEv,2", "", "", "ev3", "", "e,3");
-            DGV.Rows.Add("", "", "FTv,4", "", "FTv,4", "");
-            DGV.Rows.Add("e,6", "*FTv,5", "", "e,6", "", "e,6");
-            DGV.Rows.Add("", "", "(E)v1", "", "i,8", "");
-
-            DGV.Rows.Add("pop", "", "", "", "", "");
-            DGV.Rows.Add("", "pop", "", "", "", "");
-            DGV.Rows.Add("", "", "pop", "", "", "");
-            DGV.Rows.Add("", "", "", "pop", "", "");
-            DGV.Rows.Add("", "", "", "", "pop", "");
-            DGV.Rows.Add("", "", "", "", "", "elfogad");
-            DGV.Rows[0].HeaderCell.Value = "E";
-            DGV.Rows[1].HeaderCell.Value = "Ev";
-            DGV.Rows[2].HeaderCell.Value = "T";
-            DGV.Rows[3].HeaderCell.Value = "Tv";
-            DGV.Rows[4].HeaderCell.Value = "F";
-            DGV.Rows[5].HeaderCell.Value = "+";
-            DGV.Rows[6].HeaderCell.Value = "*";
-            DGV.Rows[7].HeaderCell.Value = "(";
-            DGV.Rows[8].HeaderCell.Value = ")";
-            DGV.Rows[9].HeaderCell.Value = "i";
-            DGV.Rows[10].HeaderCell.Value = "#";
-        }
-
-        public void OpenFile()
-        {
-            OpenFileDialog OFD = new OpenFileDialog();
-            OFD.Filter = "CSV Files (*.csv)|*.csv";
-            OFD.FilterIndex = 0;
-            OFD.DefaultExt = "csv";
-
-            if (OFD.ShowDialog() == DialogResult.OK)
-            {
-
-                if (!String.Equals(Path.GetExtension(OFD.FileName), ".csv", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Invalid file type selected; display an error.
-                    MessageBox.Show("The type of the selected file is not supported by this application. You must select an .csv file.", "Invalid File Type", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                else
-                {
-                    string fullPath = OFD.FileName;
-                    string fileName = OFD.SafeFileName;
-                    //string filepath = fullPath.Replace(fileName, "");
-                    using (var reader = new StreamReader(fullPath))
-                    using (var csv = new CsvReader(reader))
-                    {
-                    }
-                    DataSet ds = new DataSet();
-                    //DGV.DataSource =
-
-                    //ds.ReadXml(fullPath);
-                    //DGV.DataSource = ds.Tables[0];
-                }
-            }
+            //SimpleOpenFile();
         }
 
         public void SimpleOpenFile()
@@ -128,27 +65,43 @@ namespace Compilers
 
         public void SaveFile()
         {
-            textBox.Text = "";
-            textBox.Multiline = true;
+            InitializeTextBox();
             // TODO: Save File Dialog to get the save route
             int rowCount = DGV.RowCount;
             int CellCount = DGV.Rows[0].Cells.Count;
 
-            for (int rowIndex = 0; rowIndex <= rowCount - 2; rowIndex++)
+            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
-                for (int cellIndex = 0; cellIndex < CellCount - 1; cellIndex++)
+                for (int cellIndex = 0; cellIndex < CellCount; cellIndex++)
                 {
                     textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
                 }
-                textBox.Text = "\r\n";
+                textBox.Text += "\r\n";
             }
 
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Title = "Save";
+            SFD.Filter = "CSV Files (*.csv)|*.csv" + " | " + "All Files (*.*)|*.*";
 
+            string fullPath = "";
+            if (SFD.ShowDialog() == DialogResult.OK)
+            {
+                fullPath = SFD.FileName;
+            }
+
+            File.WriteAllText(fullPath, textBox.Text);
+
+        }
+        private void InitializeTextBox()
+        {
+            textBox.Text = "";
+            textBox.Multiline = true;
+            textBox.Size = new Size(750, 200);
         }
 
         private void openRule_Click(object sender, System.EventArgs e)
         {
-            OpenFile();
+            SimpleOpenFile();
         }
 
         // mentes helye a megnyitott file legyen
