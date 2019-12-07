@@ -18,7 +18,6 @@ namespace Compilers
         public CompilerForm()
         {
             InitializeComponent();
-            //SimpleOpenFile();
         }
 
         public void OpenFile()
@@ -61,7 +60,7 @@ namespace Compilers
             }
         }
 
-        public void SaveFileAs()
+        private void SaveFile()
         {
             InitializeTextBox();
             int rowCount = DGV.RowCount;
@@ -77,6 +76,12 @@ namespace Compilers
                 }
                 textBox.Text += "\r\n";
             }
+        }
+
+        private string selectedRoute = "";
+        public void SaveFileAs()
+        {
+            SaveFile();
 
             SaveFileDialog SFD = new SaveFileDialog();
             SFD.Title = "Save";
@@ -88,26 +93,31 @@ namespace Compilers
             {
                 fullPath = SFD.FileName;
             }
+            else
+            {
+                MessageBox.Show("You must choose, if you want to continue");
+            }
             File.WriteAllText(fullPath, textBox.Text);
+            selectedRoute = fullPath;
 
         }
 
-        public void SaveFile()
+        public void SaveFileShort()
         {
-            InitializeTextBox();
-            int rowCount = DGV.RowCount;
-            int CellCount = DGV.Rows[0].Cells.Count;
+            SaveFile();
+            string fullPath;
 
-            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+            if (selectedRoute != "")
             {
-                for (int cellIndex = 0; cellIndex < CellCount; cellIndex++)
-                {
-                    textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
-                }
-                textBox.Text += "\r\n";
+                fullPath = selectedRoute;
+                MessageBox.Show("Your file has been sucessfully saved here: " + "\r\n" + selectedRoute);
+            }
+            else
+            {
+                fullPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "temp.csv");
+                MessageBox.Show("Your file has been sucessfully saved into /bin/debug as temp.csv");
             }
 
-            string fullPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "temp.csv");
             File.WriteAllText(fullPath, textBox.Text);
 
         }
@@ -126,13 +136,13 @@ namespace Compilers
 
         private void saveRule_Click(object sender, System.EventArgs e)
         {
-            SaveFile();
+            SaveFileShort();
         }
 
-        // kivalszhato mentes hely
         private void SaveAs_Click(object sender, System.EventArgs e)
         {
             SaveFileAs();
         }
+
     }
 }
