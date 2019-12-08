@@ -15,18 +15,25 @@ namespace Compilers
 {
     public partial class CompilerForm : Form
     {
-        //private DataTable dataTable = new DataTable();
-        //private string columnHeaders;
+        Random rnd = new Random();
 
+        Dictionary<string, string> dictionary;
         private Stack<string> tape;
         private Stack<string> rule;
         private string ruleNum;
         private int colNum, rowNum;
+        private bool showSteps = false;
+        private string csvOutput = "";
 
         public CompilerForm()
         {
             InitializeComponent();
             BTN_Analyze.Enabled = false;
+            saveRule.Enabled = false;
+            SaveAs.Enabled = false;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
         }
 
         public void OpenFile()
@@ -44,7 +51,6 @@ namespace Compilers
             }
             string[] rawText = File.ReadAllLines(fullPath);
             string[] dataColumns = null;
-            //columnHeaders = "";
             bool isHeader = true;
 
             foreach (string textLine in rawText)
@@ -55,8 +61,6 @@ namespace Compilers
                     for (int i = 0; i <= dataColumns.Count() - 1; i++)
                     {
                         dataTable.Columns.Add(i.ToString());
-                        //dataTable.Columns.Add(dataColumns[i]);
-                        //columnHeaders += dataColumns[i] + ";";
                     }
                     dataTable.Rows.Add(dataColumns);
                     isHeader = false;
@@ -66,9 +70,6 @@ namespace Compilers
                     dataTable.Rows.Add(dataColumns);
                 }
 
-                //MessageBox.Show((string)DGV.ColumnCount.ToString());
-                //MessageBox.Show((string)DGV.RowCount.ToString());
-
                 DGV.DataSource = dataTable;
 
                 foreach (DataGridViewColumn column in DGV.Columns)
@@ -77,22 +78,15 @@ namespace Compilers
                 }
             }
             BTN_Analyze.Enabled = true;
+            saveRule.Enabled = true;
+            SaveAs.Enabled = true;
             dataTable = null;
         }
 
         private void SaveFile()
         {
-            InitializeTextBox();
             int rowCount = DGV.RowCount;
             int CellCount = DGV.Rows[0].Cells.Count;
-
-
-            //MessageBox.Show((string)DGV.ColumnCount.ToString());
-            //MessageBox.Show((string)DGV.RowCount.ToString());
-            // Add column Headers
-            //columnHeaders = columnHeaders.Remove(columnHeaders.Length - 1);
-            //textBox.Text += columnHeaders;
-            //textBox.Text += "\r\n";
 
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
@@ -100,18 +94,18 @@ namespace Compilers
                 {
                     if (!(CellCount - cellIndex <= 1))
                     {
-                        textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
+                        csvOutput += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString() + ";";
                     }
-                    else
+                    else    // dont write ; after last element
                     {
-                        textBox.Text += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString();
+                        csvOutput += DGV.Rows[rowIndex].Cells[cellIndex].Value.ToString();
                     }
-
                 }
-                textBox.Text += "\r\n";
+                csvOutput += "\r\n";
             }
         }
 
+        // global variable for "memorise" previously choosed file path
         private string selectedRoute = "";
         public void SaveFileAs()
         {
@@ -122,25 +116,32 @@ namespace Compilers
             SFD.Filter = "CSV Files (*.csv)|*.csv" + " | " + "All Files (*.*)|*.*";
 
             string fullPath = "";
-            // TODO :catch el lekezelni ha kilepne SFD bol try catch 
-            if (SFD.ShowDialog() == DialogResult.OK)
+            // TODO : improve catch
+            try
             {
-                fullPath = SFD.FileName;
+                if (SFD.ShowDialog() == DialogResult.OK)
+                {
+                    fullPath = SFD.FileName;
+                }
+                else
+                {
+                    MessageBox.Show("You must choose, if you want to continue");
+                }
+                ClearFileContent(fullPath);
+                File.WriteAllText(fullPath, csvOutput);
+                selectedRoute = fullPath;
             }
-            else
+            catch
             {
-                MessageBox.Show("You must choose, if you want to continue");
+                SaveFileAs();
             }
-            File.WriteAllText(fullPath, textBox.Text);
-            selectedRoute = fullPath;
-
         }
 
         public void SaveFileShort()
         {
             SaveFile();
-            string fullPath;
 
+            string fullPath;
             if (selectedRoute != "")
             {
                 fullPath = selectedRoute;
@@ -151,24 +152,22 @@ namespace Compilers
                 fullPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "temp.csv");
                 MessageBox.Show("Your file has been sucessfully saved into /bin/debug as temp.csv");
             }
-
-            File.WriteAllText(fullPath, textBox.Text);
+            ClearFileContent(fullPath);
+            File.WriteAllText(fullPath, csvOutput);
 
         }
 
-        private void InitializeTextBox()
+        public void ClearFileContent(string path)
         {
-            textBox.Text = "";
-            textBox.Multiline = true;
-            textBox.Size = new Size(750, 200);
+            File.WriteAllText(path, string.Empty);
         }
 
         private void Analyze()
         {
+            //labelResult.Text = "";
             rule = new Stack<string>();
             tape = new Stack<string>();
             ruleNum = "";
-            tape.Push("#");
             rule.Push("#");
             rule.Push("E");
             colNum = 0;
@@ -176,13 +175,24 @@ namespace Compilers
             labelOutput.Text = "";
             string actRule;
             string actState;
-            if (textBoxAnalyze.Text != "")
+
+            string fixedInput = CheckInput();
+
+            if (showSteps)
             {
-                for (int i = textBoxAnalyze.Text.Length - 1; i >= 0; i--)
-                {
-                    tape.Push(textBoxAnalyze.Text[i].ToString());
-                }
+                MessageBox.Show("Fixed Input: " + fixedInput);
             }
+
+
+            if (!fixedInput.Equals(""))
+            {
+                for (int i = fixedInput.Length - 1; i >= 0; i--)
+                {
+                    tape.Push(fixedInput[i].ToString());
+                }
+                labelCorrectInput.Text = fixedInput;
+            }
+
             string act = tape.Pop();
             bool end = (act == "#");
             while (DGV.Rows[rowNum].Cells[colNum].Value.ToString() != "elfogad" && !end)
@@ -191,6 +201,7 @@ namespace Compilers
                 rowNum = 1;
                 while (colNum < DGV.Columns.Count && act != DGV.Rows[0].Cells[colNum].Value.ToString())
                 {
+                    //DGV.Rows[rowNum].Cells[colNum].Style.BackColor = Color.LightGreen;
                     //MessageBox.Show(act + " / " + DGV.Rows[0].Cells[colNum].Value.ToString());
                     colNum++;
                 }
@@ -207,22 +218,28 @@ namespace Compilers
                     {
                         actRule += rule.Pop();
                     }
-                    // TODO: modify here  dataGridView.Rows[0].Cells[2].Value = recipe; dataGridView1.Rows[rowNum].HeaderCell.Value.ToString()
-                    // rownUm +1 kovi 2 helyen:
                     while (rowNum < DGV.Rows.Count && actRule != DGV.Rows[rowNum].Cells[0].Value.ToString())
                     {
-                        MessageBox.Show("actrule / rownum cels 0 /// " + actRule + "/" + DGV.Rows[rowNum].Cells[0].Value.ToString());
+                        if (showSteps)
+                        {
+                            MessageBox.Show("Act rule : " + actRule + "| Act Row Cel Value: " + DGV.Rows[rowNum].Cells[0].Value.ToString());
+                        }
+                        //DGV.Rows[rowNum].Cells[0].Style.BackColor = Color.FromArgb(150, rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255));
                         rowNum++;
                     }
                     if (rowNum == DGV.Rows.Count)
                     {
-                        MessageBox.Show(rowNum + " /// " + DGV.Rows.Count);
+                        if (showSteps)
+                        {
+                            MessageBox.Show(rowNum + " /// " + DGV.Rows.Count);
+                        }
+
                         end = true;
                         break;
                     }
                     else
                     {
-                        actState = "[" + act;
+                        actState = "<" + act;
                         foreach (string s in tape)
                         {
                             actState += s;
@@ -232,7 +249,7 @@ namespace Compilers
                         {
                             actState += s;
                         }
-                        actState += ", " + ruleNum + "]";
+                        actState += ", " + ruleNum + ">";
 
                         if (DGV.Rows[rowNum].Cells[colNum].Value.ToString() == "")
                         {
@@ -266,26 +283,85 @@ namespace Compilers
             }
             if (rowNum < DGV.RowCount && colNum < DGV.ColumnCount)
             {
-                MessageBox.Show(rowNum + " " + "<" + " " + " " + DGV.RowCount + " " + "&&" + colNum + "<" + DGV.ColumnCount);
-                MessageBox.Show(DGV.Rows[rowNum].Cells[colNum].Value.ToString() + rowNum + " " + colNum + "==" + " elfogad");
+                if (showSteps)
+                {
+                    MessageBox.Show(rowNum + " " + "<" + " " + " " + DGV.RowCount + " " + "&&" + colNum + "<" + DGV.ColumnCount);
+                    MessageBox.Show(DGV.Rows[rowNum].Cells[colNum].Value.ToString() + rowNum + " " + colNum + "==" + " elfogad");
+                }
 
                 if (DGV.Rows[rowNum].Cells[colNum].Value.ToString() == "elfogad")
                 {
                     //MessageBox.Show(DGV.Rows[rowNum].Cells[colNum].Value.ToString() + "==" + " elfogad");
                     labelResult.ForeColor = Color.Green;
-                    labelResult.Text = "elfogad";
+                    labelResult.Text = "Accepted";
                 }
                 else
                 {
                     labelResult.ForeColor = Color.Red;
-                    labelResult.Text = "Hibás input";
+                    labelResult.Text = "Error in input";
                 }
             }
             else
             {
                 labelResult.ForeColor = Color.Red;
-                labelResult.Text = "Hibás input";
+                labelResult.Text = "Error in input";
             }
+        }
+
+        private string CheckInput()
+        {
+            string inputToCheck = textBoxAnalyze.Text;
+            if (textBoxAnalyze.Text != "")
+            {
+                dictionary = new Dictionary<string, string>();
+                dictionary.Add("\r\n", " ");
+                dictionary.Add("    ", " ");
+                dictionary.Add("  ", " ");
+                dictionary.Add(" ", "");
+
+                //TODO: maybe change to ASCII code, 2 for loop, 1 for nums, 1 upper n lower case fill up
+                char[] charsToDic = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'z',
+                    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Z'};
+                for (int i = 0; i < charsToDic.Length; i++)
+                {
+                    dictionary.Add(charsToDic[i].ToString(), "i");
+                }
+
+                foreach (var x in dictionary)
+                {
+                    while (inputToCheck.Contains(x.Key))
+                    {
+                        inputToCheck = inputToCheck.Replace(x.Key, x.Value);
+                    }
+                }
+
+                char lastInputChar = inputToCheck[inputToCheck.Length - 1];
+                if (lastInputChar.Equals("#"))
+                {
+
+                }
+                else
+                {
+                    inputToCheck += "#";
+                }
+
+                return inputToCheck;
+            }
+            else
+            {
+                return "";
+            }
+        }
+        private bool CheckInputIsEmpty()
+        {
+            if (textBoxAnalyze.Text == "")
+            {
+                MessageBox.Show("You must give some input first");
+                textBoxAnalyze.Focus();
+                return true;
+            }
+            return false;
         }
 
         private void openRule_Click(object sender, System.EventArgs e)
@@ -300,7 +376,11 @@ namespace Compilers
 
         private void BTN_Analyze_Click(object sender, EventArgs e)
         {
-            Analyze();
+            if (!CheckInputIsEmpty())
+            {
+                Analyze();
+            }
+
         }
 
         private void SaveAs_Click(object sender, System.EventArgs e)
