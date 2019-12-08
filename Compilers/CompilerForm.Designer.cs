@@ -38,6 +38,7 @@
             this.textBoxAnalyze = new System.Windows.Forms.TextBox();
             this.LBL_TEXT_TO_ANALIZE = new System.Windows.Forms.Label();
             this.labelResult = new System.Windows.Forms.Label();
+            this.labelOutput = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -142,12 +143,22 @@
             this.labelResult.Size = new System.Drawing.Size(0, 20);
             this.labelResult.TabIndex = 9;
             // 
+            // labelOutput
+            // 
+            this.labelOutput.AutoSize = true;
+            this.labelOutput.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.labelOutput.Location = new System.Drawing.Point(800, 572);
+            this.labelOutput.Name = "labelOutput";
+            this.labelOutput.Size = new System.Drawing.Size(0, 16);
+            this.labelOutput.TabIndex = 10;
+            // 
             // CompilerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1107, 639);
+            this.ClientSize = new System.Drawing.Size(1065, 691);
+            this.Controls.Add(this.labelOutput);
             this.Controls.Add(this.labelResult);
             this.Controls.Add(this.LBL_TEXT_TO_ANALIZE);
             this.Controls.Add(this.textBoxAnalyze);
@@ -167,8 +178,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView DGV;
         private System.Windows.Forms.Button openRule;
         private System.Windows.Forms.Button saveRule;
         private System.Windows.Forms.Button SaveAs;
@@ -178,5 +187,7 @@
         private System.Windows.Forms.TextBox textBoxAnalyze;
         private System.Windows.Forms.Label LBL_TEXT_TO_ANALIZE;
         private System.Windows.Forms.Label labelResult;
+        public System.Windows.Forms.DataGridView DGV;
+        private System.Windows.Forms.Label labelOutput;
     }
 }

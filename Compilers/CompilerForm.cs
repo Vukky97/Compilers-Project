@@ -15,6 +15,9 @@ namespace Compilers
 {
     public partial class CompilerForm : Form
     {
+        //private DataTable dataTable = new DataTable();
+        //private string columnHeaders;
+
         private Stack<string> tape;
         private Stack<string> rule;
         private string ruleNum;
@@ -41,11 +44,8 @@ namespace Compilers
             }
             string[] rawText = File.ReadAllLines(fullPath);
             string[] dataColumns = null;
-            string columnHeaders = "";
-            List<string> rowHeaders = new List<string>();
+            //columnHeaders = "";
             bool isHeader = true;
-            //remove:
-            int k = 0;
 
             foreach (string textLine in rawText)
             {
@@ -54,39 +54,22 @@ namespace Compilers
                 {
                     for (int i = 0; i <= dataColumns.Count() - 1; i++)
                     {
-                        dataTable.Columns.Add(dataColumns[i]);
-                        columnHeaders += dataColumns[i];
+                        dataTable.Columns.Add(i.ToString());
+                        //dataTable.Columns.Add(dataColumns[i]);
+                        //columnHeaders += dataColumns[i] + ";";
                     }
+                    dataTable.Rows.Add(dataColumns);
                     isHeader = false;
                 }
                 else
                 {
-                    //dataTable.Rows.Add(dataColumns);
                     dataTable.Rows.Add(dataColumns);
-                    rowHeaders.Add((string)(dataTable.Rows[k][0] = dataColumns[0].ToString()));
-                    k++;
                 }
-                //string test = dataTable.Columns[0].ToString();
-                //MessageBox.Show(test);
-                //string test2 = dataTable.Rows[0].ToString();
-                //MessageBox.Show(test2);
-                //string test3 = dataTable.Rows[1][1].ToString();
-                //MessageBox.Show(test3);
-                //MessageBox.Show(textLine);
-                //for (int i = 0; i < dataColumns.Length - 1; i++)
-                //{
-                //    MessageBox.Show(dataTable.Rows[i + 1].ToString());
-                //}
+
+                //MessageBox.Show((string)DGV.ColumnCount.ToString());
+                //MessageBox.Show((string)DGV.RowCount.ToString());
 
                 DGV.DataSource = dataTable;
-                //DataGridView1.Rows[3].Cells[1].Value.ToString();
-                MessageBox.Show("Watch up for this.");
-                MessageBox.Show(DGV.Rows[1].Cells[0].ToString());
-
-                for (int i = 0; i < rowHeaders.Count; i++)
-                {
-                    MessageBox.Show(rowHeaders[i]);
-                }
 
                 foreach (DataGridViewColumn column in DGV.Columns)
                 {
@@ -94,6 +77,7 @@ namespace Compilers
                 }
             }
             BTN_Analyze.Enabled = true;
+            dataTable = null;
         }
 
         private void SaveFile()
@@ -102,7 +86,14 @@ namespace Compilers
             int rowCount = DGV.RowCount;
             int CellCount = DGV.Rows[0].Cells.Count;
 
-            // TODO: a headert is olvassa be valahogy a csv be
+
+            //MessageBox.Show((string)DGV.ColumnCount.ToString());
+            //MessageBox.Show((string)DGV.RowCount.ToString());
+            // Add column Headers
+            //columnHeaders = columnHeaders.Remove(columnHeaders.Length - 1);
+            //textBox.Text += columnHeaders;
+            //textBox.Text += "\r\n";
+
             for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
             {
                 for (int cellIndex = 0; cellIndex < CellCount; cellIndex++)
@@ -182,7 +173,7 @@ namespace Compilers
             rule.Push("E");
             colNum = 0;
             rowNum = 0;
-            label1.Text = "";
+            labelOutput.Text = "";
             string actRule;
             string actState;
             if (textBoxAnalyze.Text != "")
@@ -197,9 +188,10 @@ namespace Compilers
             while (DGV.Rows[rowNum].Cells[colNum].Value.ToString() != "elfogad" && !end)
             {
                 colNum = 0;
-                rowNum = 0;
-                while (colNum < DGV.Columns.Count && act != DGV.Columns[colNum].HeaderText)
+                rowNum = 1;
+                while (colNum < DGV.Columns.Count && act != DGV.Rows[0].Cells[colNum].Value.ToString())
                 {
+                    //MessageBox.Show(act + " / " + DGV.Rows[0].Cells[colNum].Value.ToString());
                     colNum++;
                 }
 
@@ -215,13 +207,16 @@ namespace Compilers
                     {
                         actRule += rule.Pop();
                     }
-                    // TODO: modify here
-                    while (rowNum < DGV.Rows.Count - 1 && actRule != DGV.Rows[rowNum].HeaderCell.Value.ToString())
+                    // TODO: modify here  dataGridView.Rows[0].Cells[2].Value = recipe; dataGridView1.Rows[rowNum].HeaderCell.Value.ToString()
+                    // rownUm +1 kovi 2 helyen:
+                    while (rowNum < DGV.Rows.Count && actRule != DGV.Rows[rowNum].Cells[0].Value.ToString())
                     {
+                        MessageBox.Show("actrule / rownum cels 0 /// " + actRule + "/" + DGV.Rows[rowNum].Cells[0].Value.ToString());
                         rowNum++;
                     }
-                    if (rowNum == DGV.Rows.Count - 1)
+                    if (rowNum == DGV.Rows.Count)
                     {
+                        MessageBox.Show(rowNum + " /// " + DGV.Rows.Count);
                         end = true;
                         break;
                     }
@@ -265,14 +260,18 @@ namespace Compilers
                                 ruleNum += temp[1];
                             }
                         }
-                        label1.Text += actState + "\r\n";
+                        labelOutput.Text += actState + "\r\n";
                     }
                 }
             }
-            if (rowNum < DGV.RowCount - 1 && colNum < DGV.ColumnCount)
+            if (rowNum < DGV.RowCount && colNum < DGV.ColumnCount)
             {
+                MessageBox.Show(rowNum + " " + "<" + " " + " " + DGV.RowCount + " " + "&&" + colNum + "<" + DGV.ColumnCount);
+                MessageBox.Show(DGV.Rows[rowNum].Cells[colNum].Value.ToString() + rowNum + " " + colNum + "==" + " elfogad");
+
                 if (DGV.Rows[rowNum].Cells[colNum].Value.ToString() == "elfogad")
                 {
+                    //MessageBox.Show(DGV.Rows[rowNum].Cells[colNum].Value.ToString() + "==" + " elfogad");
                     labelResult.ForeColor = Color.Green;
                     labelResult.Text = "elfogad";
                 }
