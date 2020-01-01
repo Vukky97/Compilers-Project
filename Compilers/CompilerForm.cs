@@ -49,6 +49,10 @@ namespace Compilers
             {
                 fullPath = OFD.FileName;
             }
+            else
+            {
+
+            }
             string[] rawText = File.ReadAllLines(fullPath);
             string[] dataColumns = null;
             bool isHeader = true;
@@ -135,6 +139,7 @@ namespace Compilers
             {
                 SaveFileAs();
             }
+            csvOutput = String.Empty;
         }
 
         public void SaveFileShort()
@@ -154,6 +159,8 @@ namespace Compilers
             }
             ClearFileContent(fullPath);
             File.WriteAllText(fullPath, csvOutput);
+            //
+            csvOutput = String.Empty;
 
         }
 
